@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#00696D">
+<meta name="color-scheme" content="light only">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Pharmacy Schedule">
+<title>College of Pharmacy — Weekly Schedule</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..600,0..1,-25..0&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --surface:#F7F9F1;
+    --surface-1:#FFFFFF;
+    --surface-2:#EFF2E7;
+    --on-surface:#1A1C18;
+    --on-surface-var:#45483E;
+    --outline:#E2E4D6;
+
+    --primary:#00696D;
+    --on-primary:#FFFFFF;
+    --primary-c:#A3EFEA;
+    --on-primary-c:#00201F;
+
+    --secondary:#6952C4;
+    --secondary-c:#E7DFFF;
+    --on-secondary-c:#20124B;
+
+    --tertiary-c:#FFDE9E;
+    --on-tertiary-c:#291A00;
+
+    --chem-bg:#EAE0FF; --chem-fg:#4527A0;
+    --bio-bg:#D9F5D2;  --bio-fg:#1B5E20;
+    --pharm-bg:#D9E7FF;--pharm-fg:#0D47A1;
+    --cs-bg:#FFE7C0;   --cs-fg:#7A4B00;
+    --hum-bg:#F6DFD3;  --hum-fg:#7A3B1E;
+    --health-bg:#C9F0EA;--health-fg:#00575A;
+    --proj-bg:#FCDCEA; --proj-fg:#880E4F;
+
+    --shadow: 0 1px 2px rgba(0,0,0,.05), 0 4px 14px rgba(0,0,0,.05);
+    color-scheme: light only;
+  }
+  .mini-icon{
+    flex:0 0 auto;
+    width:22px;height:22px;
+    border-radius:50%;
+    display:inline-flex;align-items:center;justify-content:center;
+  }
+  .mini-icon .material-symbols-rounded{font-size:13px;}
+  .mini-icon.i-time{background:var(--tertiary-c);color:var(--on-tertiary-c);}
+  .mini-icon.i-place{background:var(--secondary-c);color:var(--on-secondary-c);}
+  .mini-icon.i-primary{background:var(--primary-c);color:var(--on-primary-c);}
+  .mini-icon.i-secondary{background:var(--secondary-c);color:var(--on-secondary-c);}
+
+  .stage-btn .mini-icon,.day-btn .mini-icon{width:20px;height:20px;}
+  .stage-btn .mini-icon .material-symbols-rounded,.day-btn .mini-icon .material-symbols-rounded{font-size:12px;}
+
+  /* ---- burger button ---- */
+  .burger-btn{
+    position:absolute;top:20px;left:18px;
+    width:40px;height:40px;border-radius:50%;
+    background:rgba(255,255,255,.2);border:none;color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;z-index:2;
+    transition:background .2s;
+  }
+  .burger-btn:hover{background:rgba(255,255,255,.32);}
+  .burger-btn .material-symbols-rounded{font-size:22px;}
+  header.top .header-inner{margin-inline-start:54px;}
+
+  /* ---- drawer ---- */
+  .drawer-backdrop{
+    position:fixed;inset:0;background:rgba(10,12,8,.4);
+    opacity:0;pointer-events:none;transition:opacity .3s;z-index:999;
+  }
+  .drawer-backdrop.open{opacity:1;pointer-events:auto;}
+
+  .drawer{
+    position:fixed;top:0;bottom:0;left:0;
+    width:min(82vw,320px);
+    background:var(--surface-1);
+    z-index:1000;
+    transform:translateX(-108%);
+    transition:transform .32s cubic-bezier(.34,1.56,.64,1);
+    box-shadow:4px 0 24px rgba(0,0,0,.18);
+    overflow-y:auto;
+  }
+  .drawer.open{transform:translateX(0);}
+
+  .drawer-head{
+    display:flex;align-items:center;gap:10px;
+    padding:20px 16px;
+    background:linear-gradient(160deg,var(--primary),var(--secondary));
+    color:#fff;position:sticky;top:0;
+  }
+  .drawer-head .drawer-title{
+    font-family:'Outfit',sans-serif;font-weight:700;font-size:15px;flex:1;
+  }
+  .drawer-close{
+    background:rgba(255,255,255,.18);border:none;color:#fff;
+    width:30px;height:30px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;cursor:pointer;
+  }
+
+  .drawer-body{padding:10px 10px 24px;}
+
+  .drawer-group{margin-bottom:4px;}
+  .drawer-toggle{
+    width:100%;display:flex;align-items:center;gap:10px;
+    background:none;border:none;text-align:left;
+    padding:12px 8px;border-radius:14px;cursor:pointer;
+    font-family:'Outfit',sans-serif;font-weight:600;font-size:14px;color:var(--on-surface);
+  }
+  .drawer-toggle:hover{background:var(--surface-2);}
+  .drawer-toggle.active-day{color:var(--primary);}
+  .drawer-toggle .drawer-chev{
+    margin-inline-start:auto;transition:transform .25s;
+    color:var(--on-surface-var);font-size:18px;
+  }
+  .drawer-toggle.open .drawer-chev{transform:rotate(180deg);}
+
+  .drawer-panel{
+    max-height:0;overflow:hidden;
+    transition:max-height .28s ease;
+  }
+  .drawer-panel.open{max-height:600px;}
+
+  .drawer-leaf{
+    width:calc(100% - 14px);display:flex;align-items:center;gap:8px;
+    background:var(--surface);border:1px solid var(--outline);
+    margin:4px 0 4px 14px;padding:9px 12px;border-radius:12px;cursor:pointer;
+    font-family:'Inter',sans-serif;font-weight:600;font-size:13px;color:var(--on-surface-var);
+  }
+  .drawer-leaf.active{background:var(--primary-c);border-color:transparent;color:var(--on-primary-c);}
+  .drawer-leaf .mini-icon{width:20px;height:20px;}
+  .drawer-leaf .mini-icon .material-symbols-rounded{font-size:12px;}
+  .drawer-leaf .material-symbols-rounded{font-size:14px;}
+
+  .drawer-toggle.sub{
+    padding-inline-start:20px;font-size:13px;font-weight:600;
+  }
+  .drawer-toggle.sub .mini-icon{width:24px;height:24px;}
+  .drawer-toggle.sub .mini-icon .material-symbols-rounded{font-size:12px;}
+
+  .drawer-group-grid{
+    display:flex;flex-wrap:wrap;gap:6px;
+    padding:2px 12px 10px 34px;
+  }
+  .drawer-group-grid .drawer-leaf{
+    width:auto;flex:0 0 auto;margin:0;
+    padding:7px 13px;font-size:12.5px;
+  }
+
+  .drawer-divider{
+    height:1px;background:var(--outline);
+    margin:10px 8px 6px;
+  }
+  .drawer-settings-btn{
+    width:100%;display:flex;align-items:center;gap:8px;
+    background:none;border:none;text-align:left;
+    padding:10px 8px;cursor:pointer;
+    font-family:'Inter',sans-serif;font-weight:600;font-size:12.5px;
+    color:var(--on-surface-var);opacity:.75;
+  }
+  .drawer-settings-btn:hover{opacity:1;background:var(--surface-2);border-radius:12px;}
+
+  .drawer-filters-head{
+    display:flex;align-items:center;gap:10px;
+    padding:6px 8px 10px;
+  }
+  .drawer-back{
+    background:var(--surface-2);border:none;color:var(--on-surface);
+    width:32px;height:32px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;cursor:pointer;
+  }
+  .drawer-filters-title{
+    font-family:'Outfit',sans-serif;font-weight:700;font-size:15px;color:var(--on-surface);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--surface);
+    color:var(--on-surface);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    padding-bottom:56px;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .material-symbols-rounded{
+    font-family:'Material Symbols Rounded';
+    font-weight:normal;
+    font-style:normal;
+    font-size:22px;
+    line-height:1;
+    letter-spacing:normal;
+    text-transform:none;
+    white-space:nowrap;
+    word-wrap:normal;
+    direction:ltr;
+    -webkit-font-feature-settings:'liga';
+    font-feature-settings:'liga';
+    -webkit-font-smoothing:antialiased;
+    font-variation-settings:'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 24;
+    display:inline-block;
+  }
+
+  main,header,nav{max-width:640px;margin:0 auto;}
+
+  header.top{
+    background:linear-gradient(160deg,var(--primary),var(--primary) 55%,var(--secondary));
+    color:var(--on-primary);
+    padding:26px 20px 34px;
+    border-radius:0 0 32px 32px;
+    position:relative;
+    overflow:hidden;
+  }
+  header.top::after{
+    content:"";
+    position:absolute;
+    inset:auto -40px -70px auto;
+    width:180px;height:180px;
+    background:rgba(255,255,255,.12);
+    border-radius:50% 40% 60% 50% / 50% 60% 40% 50%;
+  }
+  header.top .eyebrow{
+    display:flex;align-items:center;gap:8px;
+    font-size:13px;font-weight:600;opacity:.95;margin:0 0 8px;
+  }
+  header.top .eyebrow .mini-icon{
+    background:rgba(255,255,255,.22);color:#fff;
+  }
+  header.top h1{
+    font-family:'Outfit',sans-serif;
+    font-weight:800;
+    font-size:28px;
+    line-height:1.15;
+    margin:0 0 8px;
+    letter-spacing:-.2px;
+  }
+  header.top .term{
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:12.5px;font-weight:600;
+    background:rgba(255,255,255,.18);
+    padding:5px 12px;border-radius:999px;
+  }
+
+  nav.stages{
+    display:flex;gap:8px;overflow-x:auto;
+    padding:16px 20px 0;scrollbar-width:none;
+  }
+  nav.stages::-webkit-scrollbar{display:none;}
+  .stage-btn{
+    flex:0 0 auto;
+    display:flex;align-items:center;gap:6px;
+    background:var(--surface-1);
+    border:1.5px solid var(--outline);
+    color:var(--on-surface-var);
+    font-family:'Outfit',sans-serif;
+    font-weight:600;font-size:14px;
+    padding:10px 16px 10px 12px;
+    border-radius:20px;
+    cursor:pointer;
+    transition:transform .35s cubic-bezier(.34,1.56,.64,1), background .2s, color .2s, border-color .2s;
+  }
+  .stage-btn .material-symbols-rounded{font-size:19px;}
+  .stage-btn[aria-selected="true"]{
+    background:var(--primary-c);
+    border-color:transparent;
+    color:var(--on-primary-c);
+    transform:scale(1.04);
+  }
+
+  main{padding:16px 16px 0;}
+
+  .day-row{
+    display:grid;grid-template-columns:repeat(5,1fr);
+    gap:6px;margin-bottom:20px;
+  }
+  .day-btn{
+    display:flex;flex-direction:column;align-items:center;gap:3px;
+    background:var(--surface-1);
+    border:1.5px solid var(--outline);
+    color:var(--on-surface-var);
+    font-family:'Outfit',sans-serif;
+    font-weight:600;font-size:12px;
+    padding:10px 2px 9px;
+    border-radius:18px;
+    cursor:pointer;
+    transition:transform .35s cubic-bezier(.34,1.56,.64,1), background .2s, color .2s, border-color .2s;
+  }
+  .day-btn .material-symbols-rounded{font-size:18px;}
+  .day-btn[aria-selected="true"]{
+    background:var(--secondary-c);
+    border-color:transparent;
+    color:var(--on-secondary-c);
+    transform:scale(1.06);
+  }
+
+  .section-label{
+    font-family:'Outfit',sans-serif;
+    font-size:19px;font-weight:700;
+    display:flex;align-items:center;gap:8px;
+    margin:22px 2px 12px;
+  }
+  .section-label .material-symbols-rounded{
+    font-size:22px;color:var(--primary);
+  }
+  .section-label .lbl-icon{
+    width:34px;height:34px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    background:var(--primary-c);
+  }
+  .section-label .lbl-icon .material-symbols-rounded{
+    font-size:19px;color:var(--on-primary-c);
+  }
+  .section-label .hall-badge{
+    margin-inline-start:auto;
+    display:flex;align-items:center;gap:4px;
+    font-family:'Inter',sans-serif;
+    font-weight:700;font-size:12px;
+    color:var(--on-tertiary-c);
+    background:var(--tertiary-c);
+    padding:5px 12px 5px 8px;
+    border-radius:999px;
+  }
+  .section-label .hall-badge .material-symbols-rounded{
+    font-size:16px;color:inherit;
+  }
+
+  .day-block-heading{
+    display:flex;align-items:center;gap:8px;
+    font-family:'Outfit',sans-serif;font-weight:700;font-size:13.5px;
+    color:var(--on-surface-var);
+    margin:18px 2px 8px;
+    padding-bottom:6px;
+    border-bottom:2px solid var(--outline);
+  }
+  .day-block-heading:first-child{margin-top:2px;}
+
+  .row-card{
+    display:flex;align-items:center;gap:12px;
+    background:var(--surface-1);
+    border:1px solid var(--outline);
+    padding:12px 14px;
+    margin-bottom:8px;
+    border-radius:20px;
+    box-shadow:var(--shadow);
+  }
+  .icon-blob{
+    flex:0 0 auto;
+    width:46px;height:46px;
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .icon-blob .material-symbols-rounded{font-size:24px;}
+
+  .row-body{flex:1;min-width:0;}
+  .row-body .title{
+    font-family:'Outfit',sans-serif;
+    font-weight:700;font-size:14.5px;
+    color:var(--on-surface);
+    margin:0 0 3px;
+  }
+  .row-meta{
+    display:flex;flex-wrap:wrap;gap:8px;
+    font-size:12px;color:var(--on-surface-var);
+  }
+  .row-meta span{display:inline-flex;align-items:center;gap:5px;}
+  .row-meta .material-symbols-rounded{font-size:13px;}
+
+  .group-chip{
+    flex:0 0 auto;
+    font-family:'Outfit',sans-serif;
+    font-weight:800;font-size:13px;
+    background:var(--surface-2);
+    color:var(--on-surface);
+    width:30px;height:30px;
+    display:flex;align-items:center;justify-content:center;
+    border-radius:10px;
+  }
+
+  .practical-block{margin-bottom:10px;}
+  .practical-block .row-card{margin-bottom:0;border-radius:20px 20px 0 0;}
+  .slot-list{
+    background:var(--surface-1);
+    border:1px solid var(--outline);
+    border-top:none;
+    border-radius:0 0 20px 20px;
+    box-shadow:var(--shadow);
+    padding:2px 14px 10px 72px;
+  }
+  .slot-row{
+    display:flex;align-items:center;gap:10px;
+    padding:6px 0;
+    border-top:1px dashed var(--outline);
+    font-size:12.5px;
+  }
+  .slot-row:first-child{border-top:none;}
+  .slot-row .group-chip{width:26px;height:26px;font-size:12px;}
+  .slot-row .time{color:var(--on-surface-var);display:flex;align-items:center;gap:5px;}
+  .slot-row .time .material-symbols-rounded{font-size:13px;}
+
+  .empty-state{
+    display:flex;flex-direction:column;align-items:center;gap:8px;
+    padding:30px 16px;
+    text-align:center;
+    color:var(--on-surface-var);
+    font-size:13.5px;
+    border:1.5px dashed var(--outline);
+    border-radius:20px;
+  }
+  .empty-state .material-symbols-rounded{font-size:30px;color:var(--outline);}
+
+  details.staff{
+    background:var(--surface-1);
+    border:1px solid var(--outline);
+    border-radius:20px;
+    margin-top:24px;
+    box-shadow:var(--shadow);
+  }
+  details.staff summary{
+    cursor:pointer;list-style:none;
+    padding:14px 16px;
+    display:flex;align-items:center;gap:8px;
+    font-family:'Outfit',sans-serif;
+    font-weight:700;font-size:15.5px;
+  }
+  details.staff summary::-webkit-details-marker{display:none;}
+  details.staff summary .material-symbols-rounded{color:var(--on-primary-c);}
+  details.staff summary .lbl-icon{
+    width:34px;height:34px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    background:var(--primary-c);
+  }
+  details.staff summary .lbl-icon .material-symbols-rounded{font-size:19px;}
+  details.staff summary .chev{margin-inline-start:auto;transition:transform .3s cubic-bezier(.34,1.56,.64,1);color:var(--on-surface-var);}
+  details.staff[open] summary .chev{transform:rotate(180deg);}
+  .staff-list{padding:2px 16px 14px;display:flex;flex-direction:column;gap:12px;}
+  .staff-item .subj-name{
+    font-family:'Outfit',sans-serif;font-weight:700;font-size:13.5px;
+    color:var(--primary);margin-bottom:3px;
+  }
+  .staff-item .role-line{font-size:12px;color:var(--on-surface-var);margin:1px 0;}
+  .staff-item .role-line b{color:var(--on-surface);font-weight:600;}
+
+  footer.note{
+    display:flex;align-items:center;gap:8px;justify-content:center;
+    margin:26px auto 0;padding:14px 20px;
+    text-align:center;font-size:12.5px;font-weight:600;
+    color:var(--on-tertiary-c);
+    background:var(--tertiary-c);
+    border-radius:16px;
+    max-width:608px;
+  }
+  footer.credit{
+    text-align:center;font-size:11.5px;color:var(--on-surface-var);
+    padding:12px 16px 0;
+  }
+
+  @media (max-width:380px){
+    header.top h1{font-size:24px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="drawer-backdrop" id="drawerBackdrop"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawer-head">
+    <span class="mini-icon" style="background:rgba(255,255,255,.22);color:#fff;"><span class="material-symbols-rounded" style="font-size:15px;">calendar_view_week</span></span>
+    <span class="drawer-title">Browse Schedule</span>
+    <button class="drawer-close" id="drawerClose"><span class="material-symbols-rounded">close</span></button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+</aside>
+
+<header class="top">
+  <button class="burger-btn" id="burgerBtn" aria-label="Open menu">
+    <span class="material-symbols-rounded">menu</span>
+  </button>
+  <div class="header-inner">
+    <div class="eyebrow">
+      <span class="mini-icon"><span class="material-symbols-rounded" style="font-size:13px;">school</span></span>
+      Tikrit University · College of Pharmacy
+    </div>
+    <h1 id="stageTitle">Weekly Lecture Schedule</h1>
+    <span class="term">
+      <span class="mini-icon" style="background:rgba(255,255,255,.22);color:#fff;width:18px;height:18px;"><span class="material-symbols-rounded" style="font-size:12px;">calendar_month</span></span>
+      First Semester · 2026–2027
+    </span>
+  </div>
+</header>
+
+<main>
+  <div id="scheduleView">
+    <div class="section-label">
+      <span class="lbl-icon"><span class="material-symbols-rounded">menu_book</span></span>
+      <span>Theory Lectures</span>
+      <span class="hall-badge" id="hallBadge"></span>
+    </div>
+    <div id="theoryList"></div>
+
+    <div id="practicalWrap"></div>
+  </div>
+
+  <div id="staffView" hidden>
+    <div class="section-label">
+      <span class="lbl-icon"><span class="material-symbols-rounded">groups</span></span>
+      <span>Teaching Staff</span>
+    </div>
+    <div class="staff-list" id="staffList"></div>
+  </div>
+
+  <div id="filterView" hidden></div>
+
+  <footer class="note">
+    <span class="mini-icon" style="background:rgba(0,0,0,.08);"><span class="material-symbols-rounded" style="font-size:13px;">event_available</span></span>
+    Effective from Sunday, September 20, 2026
+  </footer>
+  <p class="credit">Tap ⋮ in your browser → "Add to Home screen" to use this as an app</p>
+</main>
+
+<script>
+const DAYS = ["Sunday","Monday","Tuesday","Wednesday","Thursday"];
+const DAY_ICONS = {
+  Sunday:"wb_sunny", Monday:"looks_two", Tuesday:"looks_3",
+  Wednesday:"looks_4", Thursday:"looks_5"
+};
+
+const DATA = {
+  s2:{
+    label:"Stage 2", icon:"looks_two",
+    days:{
+      Sunday:{
+        hall:"4 / 2",
+        theory:[
+          {time:"9:00–11:00",subj:"Physiology II",group:"A"},
+          {time:"10:30–11:30",subj:"Computer Sciences II",group:"B"},
+          {time:"11:30–1:30",subj:"Physiology II",group:"B"},
+          {time:"12:30–1:30",subj:"Computer Sciences II",group:"A"}
+        ],
+        practical:[
+          {lab:"Organic Chemistry Lab",subj:"Organic Chemistry II",slots:[["9:00–10:30","B1"],["11:00–12:30","A1"]]},
+          {lab:"Physical Pharmacy Lab",subj:"Physical Pharmacy I",slots:[["9:00–10:30","B2"],["11:00–12:30","A2"]]},
+          {lab:"Physiology Lab",subj:"Physiology II",slots:[["9:00–10:30","B3"],["11:00–12:30","A3"]]}
+        ]
+      },
+      Monday:{
+        hall:"4",
+        theory:[
+          {time:"8:30–11:30",subj:"Organic Chemistry II",group:"B"},
+          {time:"11:30–2:30",subj:"Organic Chemistry II",group:"A"}
+        ],
+        practical:[
+          {lab:"Organic Chemistry Lab",subj:"Organic Chemistry II",slots:[["8:30–10:00","A2"],["10:00–11:30","A3"],["11:30–1:00","B2"],["1:00–2:30","B3"]]},
+          {lab:"Physical Pharmacy Lab",subj:"Physical Pharmacy I",slots:[["8:30–10:00","A3"],["10:00–11:30","A1"],["11:30–1:00","B3"],["1:00–2:30","B1"]]},
+          {lab:"Physiology Lab",subj:"Physiology II",slots:[["8:30–10:00","A1"],["10:00–11:30","A2"],["11:30–1:00","B1"],["1:00–2:30","B2"]]}
+        ]
+      },
+      Tuesday:{
+        hall:"4",
+        theory:[
+          {time:"8:30–11:30",subj:"Medical Microbiology I",group:"A"},
+          {time:"11:30–2:30",subj:"Medical Microbiology I",group:"B"}
+        ],
+        practical:[
+          {lab:"Computer Lab",subj:"Computer Sciences II",slots:[["8:30–10:00","B1"],["10:00–11:30","B2"],["11:30–1:00","A1"],["1:00–2:30","A2"]]},
+          {lab:"Microbiology Lab",subj:"Medical Microbiology I",slots:[["8:30–10:00","B2"],["10:00–11:30","B1"],["11:30–1:00","A2"],["1:00–2:30","A1"]]}
+        ]
+      },
+      Wednesday:{
+        hall:"4 / 2",
+        theory:[
+          {time:"8:30–11:30",subj:"Physical Pharmacy I",group:"A"},
+          {time:"10:00–11:30",subj:"Arabic Language II",group:"B"},
+          {time:"11:30–2:30",subj:"Physical Pharmacy I",group:"B"}
+        ],
+        practical:[
+          {lab:"Computer Lab",subj:"Computer Sciences II",slots:[["8:30–10:00","B3"],["11:30–1:00","A3"]]}
+        ]
+      },
+      Thursday:{
+        hall:"4 / 2",
+        theory:[
+          {time:"8:30–10:00",subj:"Arabic Language II",group:"A"},
+          {time:"10:00–1:00",subj:"Baath Regime Crimes in Iraq",group:"B"},
+          {time:"11:30–1:00",subj:"Baath Regime Crimes in Iraq",group:"A"}
+        ],
+        practical:[
+          {lab:"Microbiology Lab",subj:"Medical Microbiology I",slots:[["8:30–10:00","B3"],["10:00–11:30","A3"]]}
+        ]
+      }
+    },
+    staff:[
+      ["Medical Microbiology I","أ د هدى صالح، م د شيماء منشد","م م محمد حسين، م م شهد معاد، م م حنين ضياء، م م نور واثق"],
+      ["Organic Chemistry II","أ م د ليث وعد الله، أ د عفراء صابر","م د ليث وعد الله عبد الله، م حسن محمد، م م مها محمد، م م سفانة عوف"],
+      ["Physiology II","أ د جواد علي، أ م د خالد سعود، م د نمارق عطا الله","أ م د خالد سعود، م د نمارق عطا الله، م م رابعة خالد"],
+      ["Baath Regime Crimes in Iraq","م م زهير درب، م م عمر خليل، م م نصير حاتم",""],
+      ["Computer Sciences II","م م عمر خليل، أ م د دلال صالح، م مها سفر","م م عمر خليل، أ م د دلال صالح، م مها سفر"],
+      ["Physical Pharmacy I","م د يوسف كمال، م د ميمونة حميد","م د ميمونة حميد، ص. فدوى عماد، ص. منال موفق"],
+      ["Arabic Language II","م د رافد شهاب، م د أمنة موسى",""]
+    ]
+  },
+  s3:{
+    label:"Stage 3", icon:"looks_3",
+    days:{
+      Sunday:{
+        hall:"3",
+        theory:[{time:"9:00–12:00",subj:"Biochemistry I",group:"—"}],
+        practical:[{lab:"—",subj:"Pathophysiology",slots:[["12:00–1:30","A"],["12:00–1:30","B"]]}]
+      },
+      Monday:{
+        hall:"3",
+        theory:[
+          {time:"8:30–11:30",subj:"Pathophysiology",group:"—"},
+          {time:"11:30–1:30",subj:"Pharmacognosy II",group:"—"}
+        ],
+        practical:[]
+      },
+      Tuesday:{
+        hall:"—",
+        theory:[],
+        practical:[
+          {lab:"Industrial Pharmacy Lab",subj:"Pharm. Technology I",slots:[["8:30–10:30","B1"],["10:30–12:30","B2"]]},
+          {lab:"Clinical Biochemistry Lab",subj:"Biochemistry I",slots:[["8:30–10:30","B2"],["10:30–12:30","B1"]]},
+          {lab:"General Chemistry Lab",subj:"Inorganic Pharm. Chem.",slots:[["8:30–10:30","A1"],["10:30–12:30","A2"]]},
+          {lab:"Pharmacognosy Lab",subj:"Pharmacognosy II",slots:[["8:30–10:30","A2"],["10:30–12:30","A1"]]}
+        ]
+      },
+      Wednesday:{
+        hall:"—",
+        theory:[],
+        practical:[
+          {lab:"Industrial Pharmacy Lab",subj:"Pharm. Technology I",slots:[["8:30–10:30","A1"],["10:30–12:30","A2"]]},
+          {lab:"Clinical Biochemistry Lab",subj:"Biochemistry I",slots:[["8:30–10:30","A2"],["10:30–12:30","A1"]]},
+          {lab:"General Chemistry Lab",subj:"Inorganic Pharm. Chem.",slots:[["8:30–10:30","B1"],["10:30–12:30","B2"]]},
+          {lab:"Pharmacognosy Lab",subj:"Pharmacognosy II",slots:[["8:30–10:30","B2"],["10:30–12:30","B1"]]}
+        ]
+      },
+      Thursday:{
+        hall:"3",
+        theory:[
+          {time:"8:30–11:30",subj:"Pharmaceutical Technology I",group:"—"},
+          {time:"11:30–1:30",subj:"Inorganic Pharmaceutical Chemistry",group:"—"}
+        ],
+        practical:[]
+      }
+    },
+    staff:[
+      ["Pathophysiology","م د مثنى حسين بيج، م م ريهام حسن ثامر","م د مثنى حسين بيج، م م ريهام حسن ثامر"],
+      ["Biochemistry I","أ م د ياسر أحمد موفق","م د سلمى أنور، م عالية عثمان، م م فراس فهد، ص. عصام حاضر"],
+      ["Pharmaceutical Technology I","م د يوسف كمال، م د أمنة مصطفى","م م مينا عماد، ص. مصطفى خالد، ص. لقاء زياد"],
+      ["Inorganic Pharm. Chemistry","م م شيرين ناظم","م م أحمد رافع، م م صباح فرحان"],
+      ["Pharmacognosy II","أ م د عمر حسين، م محمد علي","م د ياسر خضر، م محمد علي، م م محمد حسين، ص. أحمد نسيم، ص. صفاء مقداد"]
+    ]
+  },
+  s4:{
+    label:"Stage 4", icon:"looks_4",
+    days:{
+      Sunday:{
+        hall:"Library",
+        theory:[
+          {time:"9:00–11:00",subj:"Pharmacology II",group:"—"},
+          {time:"11:00–1:00",subj:"Public Health",group:"—"}
+        ],
+        practical:[]
+      },
+      Monday:{
+        hall:"Library",
+        theory:[
+          {time:"8:30–10:30",subj:"Biopharmaceutics",group:"—"},
+          {time:"10:30–12:30",subj:"Clinical Pharmacy I",group:"—"},
+          {time:"12:30–2:00",subj:"Pharmacology II",group:"—"}
+        ],
+        practical:[]
+      },
+      Tuesday:{
+        hall:"3",
+        theory:[
+          {time:"8:30–11:30",subj:"Organic Pharm. Chemistry II",group:"B"},
+          {time:"11:30–2:30",subj:"Organic Pharm. Chemistry II",group:"A"}
+        ],
+        practical:[
+          {lab:"Organic Chemistry Lab",subj:"Organic Pharm. Chem. II",slots:[["9:00–11:00","A3"],["11:30–1:30","B2"]]}
+        ]
+      },
+      Wednesday:{
+        hall:"—",
+        theory:[],
+        practical:[
+          {lab:"Physiology Lab",subj:"Pharmacology II",slots:[["8:30–10:30","B1"],["10:30–12:30","B2"],["12:30–2:30","A1"]]},
+          {lab:"Hall 1",subj:"Clinical Pharmacy I",slots:[["8:30–10:30","B2"],["10:30–12:30","B1"],["12:30–2:30","A2"]]},
+          {lab:"Organic Chemistry Lab",subj:"Organic Pharm. Chem. II",slots:[["8:30–10:30","A1"]]},
+          {lab:"Physical Pharmacy Lab",subj:"Biopharmaceutics",slots:[["8:30–10:30","A2"],["10:30–12:30","A1"],["12:30–2:30","A3"]]}
+        ]
+      },
+      Thursday:{
+        hall:"—",
+        theory:[],
+        practical:[
+          {lab:"Physiology Lab",subj:"Pharmacology II",slots:[["8:30–10:30","A2"],["10:30–12:30","A3"]]},
+          {lab:"Hall 1",subj:"Clinical Pharmacy I",slots:[["8:30–10:30","A3"],["10:30–12:30","A1"]]},
+          {lab:"Organic Chemistry Lab",subj:"Organic Pharm. Chem. II",slots:[["8:30–10:30","B1"],["10:30–12:30","A2"]]},
+          {lab:"Physical Pharmacy Lab",subj:"Biopharmaceutics",slots:[["8:30–10:30","B2"],["10:30–12:30","B1"]]}
+        ]
+      }
+    },
+    staff:[
+      ["Pharmacology II","م حسن عدنان، م ربيع عبد الله، م م وطبان عبد الله، م م نبراس حسب الله، ص. منال موفق","م حسن عدنان، م ربيع عبد الله، م م أنور محمود"],
+      ["Public Health","أ د جواد علي، أ م د ميسم عدنان","أ د عدنان مصطفى"],
+      ["Clinical Pharmacy I","أ د مهند ياسر رديف","م م زينب عبد الحميد، م م إبراهيم ياور، ص. فدوى عماد"],
+      ["Org. Pharm. Chemistry II","أ م د علي حسين عباس","م مصطفى فايز، م م فاطمة عبد الكريم، ص. عمر طاهر، ص. أحمد نسيم"],
+      ["Biopharmaceutics","أ م د أحمد يوسف، م د علاء عبد الاله","أ م د أحمد يوسف، ص. أركان وارور"]
+    ]
+  },
+  s5:{
+    label:"Stage 5", icon:"looks_5",
+    days:{
+      Sunday:{
+        hall:"5",
+        theory:[
+          {time:"9:00–10:00",subj:"Graduation Project",group:"A"},
+          {time:"11:00–2:00",subj:"Industrial Pharmacy II",group:"—"}
+        ],
+        practical:[
+          {lab:"Clinical Biochemistry Lab",subj:"Clinical Chemistry",slots:[["9:00–11:00","B1"]]},
+          {lab:"Industrial Pharmacy Lab",subj:"Industrial Pharmacy II",slots:[["9:00–11:00","B2"]]}
+        ]
+      },
+      Monday:{
+        hall:"5",
+        theory:[{time:"8:30–9:30",subj:"Graduation Project",group:"B"}],
+        practical:[
+          {lab:"Clinical Biochemistry Lab",subj:"Clinical Chemistry",slots:[["8:30–10:30","A1"],["10:30–12:30","A2"],["12:30–2:30","B2"]]},
+          {lab:"Industrial Pharmacy Lab",subj:"Industrial Pharmacy II",slots:[["8:30–10:30","A2"],["10:30–12:30","A1"],["12:30–2:30","B1"]]},
+          {lab:"Hall 5",subj:"Clinical Toxicology",slots:[["10:00–12:00","B"],["12:30–2:30","A"]]}
+        ]
+      },
+      Tuesday:{
+        hall:"5",
+        theory:[
+          {time:"8:30–11:30",subj:"Applied Therapeutics I",group:"—"},
+          {time:"11:30–1:30",subj:"Organic Pharm. Chemistry IV",group:"—"}
+        ],
+        practical:[]
+      },
+      Wednesday:{
+        hall:"—",
+        theory:[],
+        practical:[
+          {lab:"—",subj:"Clinical Hospital Training",slots:[["8:30–12:30","A"]]},
+          {lab:"—",subj:"Clinical Laboratories Training",slots:[["8:30–12:30","B"]]}
+        ]
+      },
+      Thursday:{
+        hall:"5",
+        theory:[
+          {time:"8:30–11:30",subj:"Clinical Chemistry",group:"—"},
+          {time:"11:30–1:30",subj:"Clinical Toxicology",group:"—"}
+        ],
+        practical:[]
+      }
+    },
+    staff:[
+      ["Clinical Toxicology","أ م د نهاد حسين، م شذل خلف، م م وطبان عبد الله","م شذل خلف، م م وطبان عبد الله، م م أنور محمود، ص. منال موفق"],
+      ["Applied Therapeutics I","أ م د زينب مصطفى",""],
+      ["Industrial Pharmacy II","م د علاء عبد الاله","م م طه عبد القادر، م م أحمد عبد الله"],
+      ["Clinical Chemistry","م د عمر صلاح صديم، م د عدنان مصطفى","م د عمر صلاح، م د سلمى أنور، م علي خلف، ص. فدوى عماد، ص. حوراء ماجد"],
+      ["Clinical Hospital Training","—","أ د مهند ياسر رديف، أ م د زينب مصطفى، أ م د شيماء صلاح، ص. فدوى عماد"],
+      ["Clinical Laboratories Training","—","م د عمر صلاح، أ م تفاؤل جابر، م م شهد معاد، م م حنين ضياء"],
+      ["Organic Pharm. Chemistry IV","أ م د يحيى سعد ياسين",""]
+    ]
+  }
+};
+
+const stageOrder = ["s2","s3","s4","s5"];
+let currentStage = "s2";
+let currentDay = "Sunday";
+let mode = "schedule"; // "schedule" | "staff" | "filter-group" | "filter-type"
+let selectedGroup = null;
+let selectedType = null; // "theory" | "practical"
+
+let drawerScreen = "nav"; // "nav" | "filters"
+let expandedL1 = null;
+let expandedL2 = null;
+
+// ---- icon / category mapping ----
+function categoryOf(subj){
+  const s = subj.toLowerCase();
+  if(s.includes("organic") || s.includes("inorganic") || (s.includes("chem") && !s.includes("bio"))) return "chem";
+  if(s.includes("microbiology") || s.includes("biochemistry") || s.includes("pathophysiology") || s.includes("physiology") || s.includes("biopharm")) return "bio";
+  if(s.includes("clinical") || s.includes("public health") || s.includes("toxicology")) return "health";
+  if(s.includes("computer")) return "cs";
+  if(s.includes("arabic") || s.includes("baath")) return "hum";
+  if(s.includes("graduation")) return "proj";
+  return "pharm";
+}
+function subjectIcon(subj){
+  const s = subj.toLowerCase();
+  if(s.includes("physiology")) return "monitor_heart";
+  if(s.includes("microbiology")) return "coronavirus";
+  if(s.includes("biochemistry")) return "biotech";
+  if(s.includes("pathophysiology")) return "pathology";
+  if(s.includes("pharmacognosy")) return "eco";
+  if(s.includes("biopharm")) return "science";
+  if(s.includes("organic") || s.includes("inorganic")) return "experiment";
+  if(s.includes("computer")) return "computer";
+  if(s.includes("arabic")) return "translate";
+  if(s.includes("baath")) return "history_edu";
+  if(s.includes("public health")) return "health_and_safety";
+  if(s.includes("clinical pharmacy")) return "vaccines";
+  if(s.includes("clinical chemistry")) return "biotech";
+  if(s.includes("clinical toxicology")) return "warning";
+  if(s.includes("clinical hospital")) return "local_hospital";
+  if(s.includes("clinical laboratories")) return "science";
+  if(s.includes("pharmacology") || s.includes("therapeutics")) return "medication";
+  if(s.includes("industrial pharmacy") || s.includes("technology")) return "factory";
+  if(s.includes("graduation")) return "school";
+  return "medication";
+}
+function locationIcon(text){
+  const s = (text||"").toLowerCase();
+  if(s.includes("library")) return "local_library";
+  if(s.includes("hall")) return "meeting_room";
+  if(s.includes("lab")) return "science";
+  if(s==="—" || !s) return "place";
+  return "place";
+}
+function timeIcon(timeRange){
+  const startHour = parseInt(timeRange.split("–")[0].split(":")[0],10);
+  // schedule always runs 8:30 - ~3:30; hours 1-4 are PM here
+  if(startHour===12 || (startHour>=1 && startHour<=4)) return "wb_twilight";
+  return "wb_sunny";
+}
+function iconBlob(icon, cat){
+  return '<div class="icon-blob" style="background:var(--'+cat+'-bg);color:var(--'+cat+'-fg);">'
+       + '<span class="material-symbols-rounded">'+icon+'</span></div>';
+}
+
+function renderTheory(rows){
+  if(!rows || rows.length===0){
+    return '<div class="empty-state"><span class="material-symbols-rounded">event_busy</span>No theory lectures today</div>';
+  }
+  return rows.map((r,i)=>{
+    const cat = categoryOf(r.subj);
+    return '<div class="row-card">'
+      + iconBlob(subjectIcon(r.subj), cat)
+      + '<div class="row-body">'
+        + '<p class="title">'+r.subj+'</p>'
+        + '<div class="row-meta">'
+          + '<span><span class="mini-icon i-time"><span class="material-symbols-rounded">'+timeIcon(r.time)+'</span></span>'+r.time+'</span>'
+        + '</div>'
+      + '</div>'
+      + (r.group!=="—" ? '<div class="group-chip">'+r.group+'</div>' : '')
+      + '</div>';
+  }).join("");
+}
+
+function renderPractical(rows){
+  if(!rows || rows.length===0) return "";
+  let html = '<div class="section-label"><span class="lbl-icon"><span class="material-symbols-rounded">experiment</span></span><span>Practical Sessions</span></div>';
+  html += rows.map((block,i)=>{
+    const cat = categoryOf(block.subj);
+    const slots = block.slots.map(s=>
+      '<div class="slot-row"><div class="group-chip">'+s[1]+'</div>'
+      + '<span class="time"><span class="mini-icon i-time"><span class="material-symbols-rounded">'+timeIcon(s[0])+'</span></span>'+s[0]+'</span></div>'
+    ).join("");
+    return '<div class="practical-block">'
+      + '<div class="row-card">'
+        + iconBlob(subjectIcon(block.subj), cat)
+        + '<div class="row-body">'
+          + '<p class="title">'+block.subj+'</p>'
+          + '<div class="row-meta"><span><span class="mini-icon i-place"><span class="material-symbols-rounded">'+locationIcon(block.lab)+'</span></span>'+block.lab+'</span></div>'
+        + '</div>'
+      + '</div>'
+      + '<div class="slot-list">'+slots+'</div>'
+      + '</div>';
+  }).join("");
+  return html;
+}
+
+function dayHeading(d){
+  return '<div class="day-block-heading"><span class="mini-icon i-secondary"><span class="material-symbols-rounded">'+DAY_ICONS[d]+'</span></span><span>'+d+'</span></div>';
+}
+function filterHeader(iconName, label){
+  return '<div class="section-label"><span class="lbl-icon"><span class="material-symbols-rounded">'+iconName+'</span></span><span>'+label+'</span></div>';
+}
+
+// unique group codes (e.g. A, A1, A2, B, B1...) used across a stage's theory+practical
+function getGroupsForStage(stageKey){
+  const stage = DATA[stageKey];
+  const set = new Set();
+  DAYS.forEach(d=>{
+    const day = stage.days[d];
+    day.theory.forEach(s=>{ if(s.group && s.group!=="—") set.add(s.group); });
+    day.practical.forEach(b=>{ b.slots.forEach(s=>{ if(s[1] && s[1]!=="—") set.add(s[1]); }); });
+  });
+  return Array.from(set).sort();
+}
+// a theory session (section "A"/"B", or "—" = everyone) applies to a chosen subgroup like "A1"
+function theoryMatchesGroup(sessionGroup, selected){
+  if(sessionGroup==="—") return true;
+  if(sessionGroup===selected) return true;
+  if(selected.indexOf(sessionGroup)===0) return true; // "A1" belongs to section "A"
+  return false;
+}
+
+function renderGroupFilterView(stageKey, group){
+  const stage = DATA[stageKey];
+  let html = "";
+  DAYS.forEach(d=>{
+    const day = stage.days[d];
+    const theoryMatches = day.theory.filter(s=>theoryMatchesGroup(s.group, group));
+    const practicalMatches = day.practical
+      .map(b=>({lab:b.lab, subj:b.subj, slots:b.slots.filter(s=>s[1]===group)}))
+      .filter(b=>b.slots.length>0);
+    if(theoryMatches.length===0 && practicalMatches.length===0) return;
+    html += dayHeading(d);
+    if(theoryMatches.length) html += renderTheory(theoryMatches);
+    if(practicalMatches.length) html += renderPractical(practicalMatches);
+  });
+  if(!html) html = '<div class="empty-state"><span class="material-symbols-rounded">search_off</span>No sessions found for this group</div>';
+  return html;
+}
+
+function renderTypeFilterView(stageKey, type){
+  const stage = DATA[stageKey];
+  let html = "";
+  DAYS.forEach(d=>{
+    const day = stage.days[d];
+    if(type==="theory"){
+      if(day.theory.length===0) return;
+      html += dayHeading(d) + renderTheory(day.theory);
+    } else {
+      if(day.practical.length===0) return;
+      html += dayHeading(d) + renderPractical(day.practical);
+    }
+  });
+  if(!html) html = '<div class="empty-state"><span class="material-symbols-rounded">search_off</span>No sessions found</div>';
+  return html;
+}
+
+
+function buildDrawer(){
+  document.getElementById("drawerBody").innerHTML =
+    drawerScreen==="nav" ? buildNavScreen() : buildFiltersScreen();
+  attachDrawerEvents();
+}
+
+function buildNavScreen(){
+  let html = "";
+  DAYS.forEach(d=>{
+    const key = "day-"+d;
+    const isOpen = expandedL1===key;
+    const isActiveDay = (mode==="schedule" && currentDay===d);
+    html += '<div class="drawer-group">'
+      + '<button class="drawer-toggle'+(isOpen?' open':'')+(isActiveDay?' active-day':'')+'" data-l1="'+key+'">'
+        + '<span class="mini-icon i-secondary"><span class="material-symbols-rounded">'+DAY_ICONS[d]+'</span></span>'
+        + '<span>'+d+'</span>'
+        + '<span class="material-symbols-rounded drawer-chev">expand_more</span>'
+      + '</button>'
+      + '<div class="drawer-panel'+(isOpen?' open':'')+'" data-panel="'+key+'">'
+        + stageOrder.map(k=>{
+            const active = (mode==="schedule" && currentStage===k && currentDay===d);
+            return '<button class="drawer-leaf'+(active?' active':'')+'" data-day="'+d+'" data-stage="'+k+'">'
+              + '<span class="mini-icon i-primary"><span class="material-symbols-rounded">'+DATA[k].icon+'</span></span>'+DATA[k].label
+              + '</button>';
+          }).join("")
+      + '</div>'
+    + '</div>';
+  });
+
+  const staffOpen = expandedL1==="staff";
+  html += '<div class="drawer-group">'
+    + '<button class="drawer-toggle'+(staffOpen?' open':'')+(mode==="staff"?' active-day':'')+'" data-l1="staff">'
+      + '<span class="mini-icon i-primary"><span class="material-symbols-rounded">groups</span></span>'
+      + '<span>Teaching Staff</span>'
+      + '<span class="material-symbols-rounded drawer-chev">expand_more</span>'
+    + '</button>'
+    + '<div class="drawer-panel'+(staffOpen?' open':'')+'" data-panel="staff">'
+      + stageOrder.map(k=>{
+          const active = (mode==="staff" && currentStage===k);
+          return '<button class="drawer-leaf'+(active?' active':'')+'" data-staffstage="'+k+'">'
+            + '<span class="mini-icon i-primary"><span class="material-symbols-rounded">'+DATA[k].icon+'</span></span>'+DATA[k].label
+            + '</button>';
+        }).join("")
+    + '</div>'
+  + '</div>';
+
+  html += '<div class="drawer-divider"></div>'
+    + '<button class="drawer-settings-btn" id="drawerSettingsBtn">'
+      + '<span class="material-symbols-rounded" style="font-size:16px;">settings</span>'
+      + '<span>Filters</span>'
+    + '</button>';
+
+  return html;
+}
+
+function buildFiltersScreen(){
+  let html = '<div class="drawer-filters-head">'
+    + '<button class="drawer-back" id="drawerBack"><span class="material-symbols-rounded">arrow_back</span></button>'
+    + '<span class="drawer-filters-title">Filters</span>'
+  + '</div>';
+
+  // ---- Filter by Group ----
+  const groupOpen = expandedL1==="filter-group";
+  html += '<div class="drawer-group">'
+    + '<button class="drawer-toggle'+(groupOpen?' open':'')+(mode==="filter-group"?' active-day':'')+'" data-l1="filter-group">'
+      + '<span class="mini-icon i-primary"><span class="material-symbols-rounded">filter_alt</span></span>'
+      + '<span>Filter by Group</span>'
+      + '<span class="material-symbols-rounded drawer-chev">expand_more</span>'
+    + '</button>'
+    + '<div class="drawer-panel'+(groupOpen?' open':'')+'" data-panel="filter-group">'
+      + stageOrder.map(k=>{
+          const l2 = "fg-"+k;
+          const stageOpen = expandedL2===l2;
+          const groups = getGroupsForStage(k);
+          return '<button class="drawer-toggle sub'+(stageOpen?' open':'')+(mode==="filter-group"&&currentStage===k?' active-day':'')+'" data-l2="'+l2+'">'
+              + '<span class="mini-icon i-secondary"><span class="material-symbols-rounded">'+DATA[k].icon+'</span></span>'
+              + '<span>'+DATA[k].label+'</span>'
+              + '<span class="material-symbols-rounded drawer-chev">expand_more</span>'
+            + '</button>'
+            + '<div class="drawer-panel'+(stageOpen?' open':'')+'" data-panel="'+l2+'">'
+              + '<div class="drawer-group-grid">'
+                + groups.map(g=>{
+                    const active = mode==="filter-group" && currentStage===k && selectedGroup===g;
+                    return '<button class="drawer-leaf'+(active?' active':'')+'" data-filter-group="'+k+'|'+g+'">'+g+'</button>';
+                  }).join("")
+              + '</div>'
+            + '</div>';
+        }).join("")
+    + '</div>'
+  + '</div>';
+
+  // ---- Filter by Type ----
+  const typeOpen = expandedL1==="filter-type";
+  const TYPE_DEFS = [
+    {key:"theory", label:"Theoretical Only", icon:"menu_book"},
+    {key:"practical", label:"Practical Only", icon:"experiment"}
+  ];
+  html += '<div class="drawer-group">'
+    + '<button class="drawer-toggle'+(typeOpen?' open':'')+(mode==="filter-type"?' active-day':'')+'" data-l1="filter-type">'
+      + '<span class="mini-icon i-primary"><span class="material-symbols-rounded">tune</span></span>'
+      + '<span>Filter by Type</span>'
+      + '<span class="material-symbols-rounded drawer-chev">expand_more</span>'
+    + '</button>'
+    + '<div class="drawer-panel'+(typeOpen?' open':'')+'" data-panel="filter-type">'
+      + TYPE_DEFS.map(t=>{
+          const l2 = "ft-"+t.key;
+          const typeSubOpen = expandedL2===l2;
+          return '<button class="drawer-toggle sub'+(typeSubOpen?' open':'')+(mode==="filter-type"&&selectedType===t.key?' active-day':'')+'" data-l2="'+l2+'">'
+              + '<span class="mini-icon i-secondary"><span class="material-symbols-rounded">'+t.icon+'</span></span>'
+              + '<span>'+t.label+'</span>'
+              + '<span class="material-symbols-rounded drawer-chev">expand_more</span>'
+            + '</button>'
+            + '<div class="drawer-panel'+(typeSubOpen?' open':'')+'" data-panel="'+l2+'">'
+              + stageOrder.map(k=>{
+                  const active = mode==="filter-type" && currentStage===k && selectedType===t.key;
+                  return '<button class="drawer-leaf'+(active?' active':'')+'" data-filter-type="'+k+'|'+t.key+'">'
+                    + '<span class="mini-icon i-primary"><span class="material-symbols-rounded">'+DATA[k].icon+'</span></span>'+DATA[k].label
+                    + '</button>';
+                }).join("")
+            + '</div>';
+        }).join("")
+    + '</div>'
+  + '</div>';
+
+  return html;
+}
+
+function attachDrawerEvents(){
+  document.querySelectorAll("[data-l1]").forEach(btn=>{
+    btn.onclick = ()=>{
+      const key = btn.dataset.l1;
+      expandedL1 = (expandedL1===key) ? null : key;
+      expandedL2 = null;
+      buildDrawer();
+    };
+  });
+  document.querySelectorAll("[data-l2]").forEach(btn=>{
+    btn.onclick = ()=>{
+      const key = btn.dataset.l2;
+      expandedL2 = (expandedL2===key) ? null : key;
+      buildDrawer();
+    };
+  });
+  document.querySelectorAll(".drawer-leaf[data-day]").forEach(btn=>{
+    btn.onclick = ()=>{
+      currentDay = btn.dataset.day;
+      currentStage = btn.dataset.stage;
+      mode = "schedule";
+      closeDrawer();
+      render();
+    };
+  });
+  document.querySelectorAll(".drawer-leaf[data-staffstage]").forEach(btn=>{
+    btn.onclick = ()=>{
+      currentStage = btn.dataset.staffstage;
+      mode = "staff";
+      closeDrawer();
+      render();
+    };
+  });
+  document.querySelectorAll(".drawer-leaf[data-filter-group]").forEach(btn=>{
+    btn.onclick = ()=>{
+      const parts = btn.dataset.filterGroup.split("|");
+      currentStage = parts[0];
+      selectedGroup = parts[1];
+      mode = "filter-group";
+      closeDrawer();
+      render();
+    };
+  });
+  document.querySelectorAll(".drawer-leaf[data-filter-type]").forEach(btn=>{
+    btn.onclick = ()=>{
+      const parts = btn.dataset.filterType.split("|");
+      currentStage = parts[0];
+      selectedType = parts[1];
+      mode = "filter-type";
+      closeDrawer();
+      render();
+    };
+  });
+  const settingsBtn = document.getElementById("drawerSettingsBtn");
+  if(settingsBtn) settingsBtn.onclick = ()=>{
+    drawerScreen = "filters";
+    expandedL1 = null; expandedL2 = null;
+    buildDrawer();
+  };
+  const backBtn = document.getElementById("drawerBack");
+  if(backBtn) backBtn.onclick = ()=>{
+    drawerScreen = "nav";
+    expandedL1 = null; expandedL2 = null;
+    buildDrawer();
+  };
+}
+
+
+function openDrawer(){
+  document.getElementById("drawer").classList.add("open");
+  document.getElementById("drawerBackdrop").classList.add("open");
+}
+function closeDrawer(){
+  document.getElementById("drawer").classList.remove("open");
+  document.getElementById("drawerBackdrop").classList.remove("open");
+}
+document.getElementById("burgerBtn").onclick = openDrawer;
+document.getElementById("drawerClose").onclick = closeDrawer;
+document.getElementById("drawerBackdrop").onclick = closeDrawer;
+
+function render(){
+  const stage = DATA[currentStage];
+
+  document.getElementById("scheduleView").hidden = (mode!=="schedule");
+  document.getElementById("staffView").hidden = (mode!=="staff");
+  document.getElementById("filterView").hidden = (mode!=="filter-group" && mode!=="filter-type");
+
+  if(mode==="schedule"){
+    document.getElementById("stageTitle").textContent = stage.label + " · " + currentDay;
+
+    const day = stage.days[currentDay];
+    const hallBadge = document.getElementById("hallBadge");
+    if(day.hall && day.hall!=="—"){
+      hallBadge.style.display="inline-flex";
+      hallBadge.innerHTML = '<span class="material-symbols-rounded">'+locationIcon(day.hall)+'</span>Hall '+day.hall;
+    } else {
+      hallBadge.style.display="none";
+    }
+
+    document.getElementById("theoryList").innerHTML = renderTheory(day.theory);
+    document.getElementById("practicalWrap").innerHTML = renderPractical(day.practical);
+
+  } else if(mode==="staff"){
+    document.getElementById("stageTitle").textContent = stage.label + " · Teaching Staff";
+
+    document.getElementById("staffList").innerHTML = stage.staff.map(row=>
+      '<div class="staff-item">'
+      + '<p class="subj-name">'+row[0]+'</p>'
+      + '<p class="role-line"><b>Theory:</b> <span dir="auto">'+(row[1]||"—")+'</span></p>'
+      + '<p class="role-line"><b>Practical:</b> <span dir="auto">'+(row[2]||"—")+'</span></p>'
+      + '</div>'
+    ).join("");
+
+  } else if(mode==="filter-group"){
+    document.getElementById("stageTitle").textContent = stage.label + " · Group " + selectedGroup;
+    document.getElementById("filterView").innerHTML =
+      filterHeader("filter_alt", "Group " + selectedGroup + " · All Days")
+      + renderGroupFilterView(currentStage, selectedGroup);
+
+  } else if(mode==="filter-type"){
+    const label = selectedType==="theory" ? "Theory Only" : "Practical Only";
+    document.getElementById("stageTitle").textContent = stage.label + " · " + label;
+    document.getElementById("filterView").innerHTML =
+      filterHeader(selectedType==="theory" ? "menu_book" : "experiment", label + " · All Days")
+      + renderTypeFilterView(currentStage, selectedType);
+  }
+
+  buildDrawer();
+}
+
+render();
+</script>
+</body>
+</html>
